@@ -10,21 +10,15 @@ public class Car {
 	}
 	
 	public void accelerate() {
-		this.motor.rpm += 100;
-		this.motor.speed += 10;
-		this.motor.oilLevel -= 0.1;
-		this.motor.gasLevel -= 0.5;
+		this.motor.accelerate();
 	}
 	
 	public void stop() {
-		this.motor.rpm -= 0;
-		this.motor.speed -= 0;
-		this.motor.oilLevel -= 0.1;
-		this.motor.gasLevel -= 0;
+		this.motor.decelerate();
 	}
 	
 	public static void main(String[] args) {
-		Motor motor = new Motor();
+		Motor motor = new StandardMotor();
 		Dashboard dashboard = new Dashboard(motor);
 		Car car = new Car(motor, dashboard);
 		

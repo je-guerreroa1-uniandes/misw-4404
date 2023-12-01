@@ -14,27 +14,39 @@
 # cronologicamente. Despues, queremos imprimirlos a la pantalla.
 
 import os
+from collections import namedtuple
 
-def organizar():
-    error_file_path = './refactoring/problema2/data/error.log'
+LogEntry = namedtuple('LogEntry', ['type', 'severity', 'time', 'message'])
 
-    with open(error_file_path, 'r') as f:
-        errores = []
-        
-        lineas = f.readlines()
-        lineas = [line.rstrip().split(' ') for line in lineas]
+def read_log_entries(file_path):
+    with open(file_path, 'r') as file:
+        for line in file:
+            yield line.strip().split(' ')
 
-        for linea in lineas:
-            if linea[0] == 'E' and int(linea[1]) > 50:
-                errores.append(linea)
+def filter_severe_errors(log_entries, severity_threshold=50):
+    for entry in log_entries:
+        if entry[0] == 'E' and int(entry[1]) > severity_threshold:
+            yield LogEntry(type=entry[0], severity=int(entry[1]), time=int(entry[2]), message=' '.join(entry[3:]))
 
-        errores.sort(key=lambda x: int(x[2]))
+def sort_errors_by_time(errors):
+    return sorted(errors, key=lambda x: x.time)
 
-        for error in errores:
-            print(' '.join(error))
+def display_errors(errors):
+    for error in errors:
+        print(f"{error.type} {error.severity} {error.time} {error.message}")
+
+def organize_log_file(error_file_path):
+    try:
+        log_entries = read_log_entries(error_file_path)
+        severe_errors = filter_severe_errors(log_entries)
+        sorted_errors = sort_errors_by_time(severe_errors)
+        display_errors(sorted_errors)
+    except IOError as e:
+        print(f"Error reading file: {e}")
 
 def main():
-    organizar()
+    error_file_path = './refactoring/problema2/data/error.log'
+    organize_log_file(error_file_path)
 
 if __name__ == '__main__':
     main()

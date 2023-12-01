@@ -1,0 +1,9 @@
+
+F	java:S106"+Replace this use of System.out by a logger.(£õú&8œ…ıÀ1
+L	java:S106"+Replace this use of System.out by a logger.(Õ·ÿûÿÿÿÿ8œ…ıÀ1
+P
+java:S1128"3Remove this unused import 'java.io.BufferedReader'.(€é²Å8¤ÙùÀ1
+R
+java:S1128"0Remove this unused import 'java.io.IOException'.(ªº»Úıÿÿÿÿ8¤ÙùÀ1
+S
+java:S1128"6Remove this unused import 'java.io.InputStreamReader'.(ãˆÎÉ8¤ÙùÀ1
