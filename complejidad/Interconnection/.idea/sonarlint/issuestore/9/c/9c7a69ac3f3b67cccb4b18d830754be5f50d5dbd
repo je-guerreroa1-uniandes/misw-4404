@@ -1,0 +1,24 @@
+
+K
+java:S3740Ñ"/Provide the parametrized type for this generic.(œÂÂßûÿÿÿÿ
+z
+java:S1192s"dDefine a constant instead of duplicating this literal "No es vÃ¡lido el elemento ingresado" 3 times.(ŒŞ«„
+w
+java:S1192;"\Define a constant instead of duplicating this literal "La posiciÃ³n no es vÃ¡lida" 12 times.(•Ô‚Çúÿÿÿÿ
+q
+java:S1192C"VDefine a constant instead of duplicating this literal "La lista estÃ¡ vacÃ­a" 9 times.(Ş©…úÿÿÿÿ
+[
+java:S2583®"DChange this condition so that it does not always evaluate to "false"(¹†¦¨
+@
+java:S1197"*Move the array designators [] to the type.(çá³÷
+o
+java:S3012)"YUse "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.(ãûşÓ
+R	java:S125–"<This block of commented-out lines of code should be removed.(Ú°à¬
+i
+java:S3776¼"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(¾Ù—Á
+p
+java:S3012Ü"YUse "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.(ãûşÓ
+p
+java:S3012±"YUse "Arrays.copyOf", "Arrays.asList", "Collections.addAll" or "System.arraycopy" instead.(ãûşÓ
+N
+java:S1135á"2Complete the task associated to this TODO comment.(» æÿÿÿÿÿ

@@ -162,46 +162,40 @@ public class Modelo {
 		return fragmento;
 		
 	}
-	
-	public String req2String()
-	{
-		String fragmento="";
-		
-		ILista lista= landingidtabla.valueSet();
-		
-		int cantidad=0;
-		
-		int contador=0;
-		
-		for(int i=1; i<= lista.size(); i++)
-		{
-			try 
-			{
-				if( ( (ILista) lista.getElement(i) ).size()>1 && contador<=10)
-				{
-					Landing landing= (Landing) ((Vertex) ((ILista) lista.getElement(i) ).getElement(1)).getInfo();
-					
-					for(int j=1; j<=((ILista) lista.getElement(i)).size(); j++)
-					{
-						cantidad+= ((Vertex) ((ILista) lista.getElement(i)).getElement(j)).edges().size();
-					}
-					
-					fragmento+= "\n Landing " + "\n Nombre: " + landing.getName() + "\n País: " + landing.getPais() + "\n Id: " + landing.getId() + "\n Cantidad: " + cantidad;
-					
+
+	public String req2String() {
+		String fragmento = "";
+
+		// Assuming Landing implements Comparable
+		ILista<Vertex<String, Landing>> listaVertices = grafo.vertices();
+
+		int contador = 0;
+
+		for (int i = 1; i <= listaVertices.size(); i++) {
+			try {
+				Vertex<String, Landing> vertex = listaVertices.getElement(i);
+				Landing landing = vertex.getInfo();
+
+				// Get the edges connected to this vertex
+				ILista<Edge<String, Landing>> edges = grafo.adjacentEdges(vertex.getId());
+
+				if (edges.size() > 1 && contador <= 10) {
+					fragmento += "\n Landing " + "\n Nombre: " + landing.getName() +
+							"\n País: " + landing.getPais() +
+							"\n Id: " + landing.getId() +
+							"\n Cantidad: " + edges.size();
+
 					contador++;
 				}
-			}
-			catch (PosException | VacioException e) 
-			{
+			} catch (PosException | VacioException e) {
 				e.printStackTrace();
 			}
-			
 		}
-		
+
 		return fragmento;
-		
 	}
-	
+
+
 	public String req3String(String pais1, String pais2)
 	{
 		Country pais11= (Country) paises.get(pais1);
@@ -353,51 +347,31 @@ public class Modelo {
 	
 	public ILista req5(String punto)
 	{
-		String codigo= (String) nombrecodigo.get(punto);
-		ILista lista= (ILista) landingidtabla.get(codigo);
-		
-		ILista countries= new ArregloDinamico<>(1);
-		try 
-		{
-			Country paisoriginal=(Country) paises.get(((Landing) ((Vertex)lista.getElement(1)).getInfo()).getPais());
-			countries.insertElement(paisoriginal, countries.size() + 1);
-		} 
-		catch (PosException | VacioException | NullException e1) 
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		for(int i=1; i<= lista.size(); i++)
-		{
-			try 
-			{
-				Vertex vertice= (Vertex) lista.getElement(i);
-				ILista arcos= vertice.edges();
-				
-				for(int j=1; j<= arcos.size(); j++)
-				{
-					Vertex vertice2= ((Edge) arcos.getElement(j)).getDestination();
-					
-					Country pais=null;
-					if (vertice2.getInfo().getClass().getName().equals("model.data_structures.Landing"))
-					{
-						Landing landing= (Landing) vertice2.getInfo();
-						pais= (Country) paises.get(landing.getPais());
-						countries.insertElement(pais, countries.size() + 1);
-						
-						float distancia= distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(), landing.getLatitude());
-							
-						pais.setDistlan(distancia);
-					}
-					else
-					{
-						pais=(Country) vertice2.getInfo();
+		String codigo = (String) nombrecodigo.get(punto);
+		ILista<Vertex<String, Landing>> lista = (ILista<Vertex<String, Landing>>) landingidtabla.get(codigo);
+
+		ILista<Country> countries = new ArregloDinamico<>(1);
+
+		for (int i = 1; i <= lista.size(); i++) {
+			try {
+				Vertex<String, Landing> vertice = lista.getElement(i);
+				ILista<Edge<String, Landing>> arcos = grafo.adjacentEdges(vertice.getId());
+
+				for (int j = 1; j <= arcos.size(); j++) {
+					Vertex<String, Landing> vertice2 = arcos.getElement(j).getDestination();
+
+					if (vertice2.getInfo() instanceof Landing) {
+						Landing landing = vertice2.getInfo();
+						Country pais = (Country) paises.get(landing.getPais());
+						if (pais != null) {
+							float distancia = distancia(pais.getLongitude(), pais.getLatitude(), landing.getLongitude(), landing.getLatitude());
+							pais.setDistlan(distancia);
+							countries.insertElement(pais, countries.size() + 1);
+						}
 					}
 				}
-				
-			} catch (PosException | VacioException | NullException e) 
-			{
+
+			} catch (PosException | VacioException | NullException e) {
 				e.printStackTrace();
 			}
 		}
