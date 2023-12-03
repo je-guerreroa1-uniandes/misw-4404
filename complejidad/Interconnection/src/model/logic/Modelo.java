@@ -423,119 +423,34 @@ public class Modelo {
 		
 		
 	}
-	
-	public ILista unificar(ILista lista, String criterio)
-	{
 
-		ILista lista2=new ArregloDinamico(1);
+	public ILista unificar(ILista lista, String criterio) {
+		ILista lista2 = new ArregloDinamico(1);
 
-		if(criterio.equals("Vertice"))
-		{
-			Comparator<Vertex<String, Landing>> comparador=null;
+		Comparator comparator = null;
+		Ordenamiento ordenamiento = new Ordenamiento();
 
-			Ordenamiento<Vertex<String, Landing>> algsOrdenamientoEventos=new Ordenamiento<Vertex<String, Landing>>();;
-
-			comparador= new Vertex.ComparadorXKey();
-
-
-			try 
-			{
-
-				if (lista!=null)
-				{
-					algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
-
-					for(int i=1; i<=lista.size(); i++)
-					{
-						Vertex actual= (Vertex) lista.getElement(i);
-						Vertex siguiente= (Vertex) lista.getElement(i+1);
-
-						if(siguiente!=null)
-						{
-							if(comparador.compare(actual, siguiente)!=0)
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-						else
-						{
-							Vertex anterior= (Vertex) lista.getElement(i-1);
-
-							if(anterior!=null)
-							{
-								if(comparador.compare(anterior, actual)!=0)
-								{
-									lista2.insertElement(actual, lista2.size()+1);
-								}
-							}
-							else
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-
-					}
-				}
-			} 
-			catch (PosException | VacioException| NullException  e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		if (criterio.equals("Vertice")) {
+			comparator = new Vertex.ComparadorXKey();
+		} else {
+			comparator = new Country.ComparadorXNombre();
 		}
-		else
-		{
-			Comparator<Country> comparador=null;
 
-			Ordenamiento<Country> algsOrdenamientoEventos=new Ordenamiento<Country>();;
+		try {
+			if (lista != null && !lista.isEmpty()) {
+				ordenamiento.ordenarMergeSort(lista, comparator, false);
 
-			comparador= new Country.ComparadorXNombre();
+				for (int i = 1; i <= lista.size(); i++) {
+					Object actual = lista.getElement(i);
+					Object siguiente = (i < lista.size()) ? lista.getElement(i + 1) : null;
 
-			try 
-			{
-
-				if (lista!=null)
-				{
-					algsOrdenamientoEventos.ordenarMergeSort(lista, comparador, false);
-				}
-
-					for(int i=1; i<=lista.size(); i++)
-					{
-						Country actual= (Country) lista.getElement(i);
-						Country siguiente= (Country) lista.getElement(i+1);
-
-						if(siguiente!=null)
-						{
-							if(comparador.compare(actual, siguiente)!=0)
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-						else
-						{
-							Country anterior= (Country) lista.getElement(i-1);
-
-							if(anterior!=null)
-							{
-								if(comparador.compare(anterior, actual)!=0)
-								{
-									lista2.insertElement(actual, lista2.size()+1);
-								}
-							}
-							else
-							{
-								lista2.insertElement(actual, lista2.size()+1);
-							}
-						}
-
+					if (siguiente == null || comparator.compare(actual, siguiente) != 0) {
+						lista2.insertElement((Comparable) actual, lista2.size() + 1);
 					}
 				}
-			
-			catch (PosException | VacioException| NullException  e) 
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+		} catch (PosException | VacioException | NullException e) {
+			e.printStackTrace();
 		}
 
 		return lista2;
@@ -607,7 +522,217 @@ public class Modelo {
 		points= new  TablaHashLinearProbing(2);
 		landingidtabla= new TablaHashSeparteChaining(2);
 		nombrecodigo=new TablaHashSeparteChaining(2);
-		
+
+		loadCountriesData();
+		loadLandingPointsData();
+		loadConnectionsData();
+
+		try
+		{
+			ILista valores = landingidtabla.valueSet();
+			
+			for(int i=1; i<=valores.size(); i++)
+			{
+				for(int j=1; j<=((ILista) valores.getElement(i)).size(); j++)
+				{
+					Vertex vertice1;
+					if((ILista) valores.getElement(i) != null)
+					{
+						vertice1= (Vertex) ((ILista) valores.getElement(i)).getElement(j);
+						for(int k=2; k<= ((ILista) valores.getElement(i)).size(); k++)
+						{
+							Vertex vertice2= (Vertex) ((ILista) valores.getElement(i)).getElement(k);
+							grafo.addEdge(vertice1.getId(), vertice2.getId(), 100);
+						}
+					}
+				}
+			}
+		}
+		catch(PosException | VacioException  e)
+		{
+			e.printStackTrace();
+		}
+}
+
+	private void loadConnectionsData() throws IOException {
+		Reader in3 = new FileReader("./data/connections.csv");
+		Iterable<CSVRecord> records3 = CSVFormat.RFC4180.withHeader().parse(in3);
+
+		int contador3=1;
+		for (CSVRecord record3 : records3)
+		{
+			String origin= record3.get(0);
+
+			String destination= record3.get(1);
+
+			String cableid= record3.get(3);
+
+			String[] lengths= record3.get(4).split(" ");
+
+			String length= lengths[0];
+
+
+			Landing landing1= (Landing) points.get(origin);
+
+			grafo.insertVertex(landing1.getLandingId()+ cableid, landing1);
+
+			Vertex vertice1= grafo.getVertex(landing1.getLandingId()+ cableid);
+
+
+			Landing landing2= (Landing) points.get(destination);
+
+			grafo.insertVertex(landing2.getLandingId()+ cableid, landing2);
+
+			Vertex vertice2= grafo.getVertex(landing2.getLandingId()+ cableid);
+
+
+			String nombrepais1= landing1.getPais();
+
+			String nombrepais2= landing2.getPais();
+
+			Country pais1=null;
+			Country pais2=null;
+			if(nombrepais1.equals("Côte d'Ivoire"))
+			{
+				pais1= (Country) paises.get("Cote d'Ivoire");
+			}
+			else if(nombrepais2.equals("Côte d'Ivoire"))
+			{
+				pais2= (Country) paises.get("Cote d'Ivoire");
+			}
+			else
+			{
+				pais1= (Country) paises.get(nombrepais1);
+				pais2= (Country) paises.get(nombrepais2);
+			}
+
+
+			if(pais1!=null)
+			{
+				float weight=distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
+
+				grafo.addEdge(pais1.getCapitalName(),landing1.getLandingId()+ cableid , weight);
+			}
+
+			if(pais2!=null)
+			{
+				float weight2=distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
+
+				grafo.addEdge(pais2.getCapitalName(),landing2.getLandingId()+ cableid , weight2);
+
+			}
+
+
+			if(landing1!=null)
+			{
+				if(landing2!=null)
+				{
+					Edge existe1= grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid);
+
+					if(existe1==null)
+					{
+						float weight3=distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(), landing2.getLatitude());
+						grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
+					}
+					else
+					{
+						float weight3=distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(), landing2.getLatitude());
+						float peso3= existe1.getWeight();
+
+						if(weight3> peso3)
+						{
+							existe1.setWeight(weight3);
+						}
+					}
+				}
+			}
+
+			try
+			{
+
+				ILista elementopc= (ILista) landingidtabla.get(landing1.getLandingId());
+				if (elementopc==null)
+				{
+					ILista valores=new ArregloDinamico(1);
+					valores.insertElement(vertice1, valores.size() +1);
+
+					landingidtabla.put(landing1.getLandingId(), valores);
+
+				}
+				else if (elementopc!=null)
+				{
+					elementopc.insertElement(vertice1, elementopc.size()+1);
+				}
+
+				elementopc= (ILista) landingidtabla.get(landing2.getLandingId());
+
+				if (elementopc==null)
+				{
+					ILista valores=new ArregloDinamico(1);
+					valores.insertElement(vertice2, valores.size() +1);
+
+					landingidtabla.put(landing2.getLandingId(), valores);
+
+				}
+				else if (elementopc!=null)
+				{
+					elementopc.insertElement(vertice2, elementopc.size()+1);
+
+				}
+
+				elementopc= (ILista) nombrecodigo.get(landing1.getLandingId());
+
+				if (elementopc==null)
+				{
+					String nombre=landing1.getName();
+					String codigo=landing1.getLandingId();
+
+					nombrecodigo.put(nombre, codigo);
+
+				}
+			}
+			catch(PosException | NullException e)
+			{
+				e.printStackTrace();
+			}
+
+
+
+		}
+	}
+
+	private void loadLandingPointsData() throws IOException {
+		Reader in2 = new FileReader("./data/landing_points.csv");
+		Iterable<CSVRecord> records2 = CSVFormat.RFC4180.withHeader().parse(in2);
+
+		int contador2=1;
+
+		for (CSVRecord record2 : records2)
+		{
+
+			String landingId= record2.get(0);
+
+			String id=record2.get(1);
+
+			String[] x= record2.get(2).split(", ");
+
+			String name= x[0];
+
+			String paisnombre= x[x.length-1];
+
+			double latitude= Double.parseDouble(record2.get(3));
+
+			double longitude= Double.parseDouble(record2.get(4));
+
+			Landing landing= new Landing(landingId, id, name, paisnombre, latitude, longitude);
+
+			points.put(landingId, landing);
+
+			Country pais= null;
+		}
+	}
+
+	private void loadCountriesData() throws IOException {
 		Reader in = new FileReader("./data/countries.csv");
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.withHeader().parse(in);
 		int contador=1;
@@ -640,214 +765,8 @@ public class Modelo {
 			}
 
 		}
-		
-		
-		Reader in2 = new FileReader("./data/landing_points.csv");
-		Iterable<CSVRecord> records2 = CSVFormat.RFC4180.withHeader().parse(in2);
+	}
 
-		int contador2=1;
-		
-		for (CSVRecord record2 : records2) 
-		{
-
-			String landingId= record2.get(0);
-			
-			String id=record2.get(1);
-			
-			String[] x= record2.get(2).split(", ");
-			
-			String name= x[0];
-			
-			String paisnombre= x[x.length-1];
-			
-			double latitude= Double.parseDouble(record2.get(3));
-			
-			double longitude= Double.parseDouble(record2.get(4));
-			
-			Landing landing= new Landing(landingId, id, name, paisnombre, latitude, longitude);
-			
-			points.put(landingId, landing);
-			
-			Country pais= null;
-		}
-		
-		
-		Reader in3 = new FileReader("./data/connections.csv");
-		Iterable<CSVRecord> records3 = CSVFormat.RFC4180.withHeader().parse(in3);
-
-		int contador3=1;
-		for (CSVRecord record3 : records3) 
-		{
-			String origin= record3.get(0);
-
-			String destination= record3.get(1);
-
-			String cableid= record3.get(3);
-
-			String[] lengths= record3.get(4).split(" ");
-
-			String length= lengths[0];
-
-
-			Landing landing1= (Landing) points.get(origin);
-			
-			grafo.insertVertex(landing1.getLandingId()+ cableid, landing1);
-			
-			Vertex vertice1= grafo.getVertex(landing1.getLandingId()+ cableid);
-
-			
-			Landing landing2= (Landing) points.get(destination);
-
-			grafo.insertVertex(landing2.getLandingId()+ cableid, landing2);
-			
-			Vertex vertice2= grafo.getVertex(landing2.getLandingId()+ cableid);
-			
-			
-			String nombrepais1= landing1.getPais();
-			
-			String nombrepais2= landing2.getPais();
-					
-			Country pais1=null;
-			Country pais2=null;
-			if(nombrepais1.equals("Côte d'Ivoire"))
-			{
-				pais1= (Country) paises.get("Cote d'Ivoire");
-			}
-			else if(nombrepais2.equals("Côte d'Ivoire"))
-			{
-				pais2= (Country) paises.get("Cote d'Ivoire");
-			}
-			else
-			{
-				pais1= (Country) paises.get(nombrepais1);
-				pais2= (Country) paises.get(nombrepais2);
-			}
-			
-
-			if(pais1!=null)
-			{
-				float weight=distancia(pais1.getLongitude(), pais1.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
-
-				grafo.addEdge(pais1.getCapitalName(),landing1.getLandingId()+ cableid , weight);
-			}
-	
-			if(pais2!=null)
-			{
-				float weight2=distancia(pais2.getLongitude(), pais2.getLatitude(), landing1.getLongitude(), landing1.getLatitude());
-
-				grafo.addEdge(pais2.getCapitalName(),landing2.getLandingId()+ cableid , weight2);
-
-			}
-			
-
-			if(landing1!=null)
-			{
-				if(landing2!=null)
-				{
-					Edge existe1= grafo.getEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid);
-	
-					if(existe1==null)
-					{
-						float weight3=distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(), landing2.getLatitude());
-						grafo.addEdge(landing1.getLandingId() + cableid, landing2.getLandingId() + cableid, weight3);
-					}
-					else
-					{
-						float weight3=distancia(landing1.getLongitude(), landing1.getLatitude(), landing2.getLongitude(), landing2.getLatitude());
-						float peso3= existe1.getWeight();
-	
-						if(weight3> peso3)
-						{
-							existe1.setWeight(weight3);
-						}
-					}
-				}
-			}
-			
-			try
-			{
-				
-				ILista elementopc= (ILista) landingidtabla.get(landing1.getLandingId());
-				if (elementopc==null)
-				{
-					ILista valores=new ArregloDinamico(1);
-					valores.insertElement(vertice1, valores.size() +1);
-
-					landingidtabla.put(landing1.getLandingId(), valores);
-					
-				}
-				else if (elementopc!=null)
-				{
-					elementopc.insertElement(vertice1, elementopc.size()+1);
-				}
-			
-				elementopc= (ILista) landingidtabla.get(landing2.getLandingId());
-	
-				if (elementopc==null)
-				{
-					ILista valores=new ArregloDinamico(1);
-					valores.insertElement(vertice2, valores.size() +1);
-	
-					landingidtabla.put(landing2.getLandingId(), valores);
-	
-				}
-				else if (elementopc!=null)
-				{
-					elementopc.insertElement(vertice2, elementopc.size()+1);
-	
-				}
-				
-				elementopc= (ILista) nombrecodigo.get(landing1.getLandingId());
-				
-				if (elementopc==null)
-				{
-					String nombre=landing1.getName();
-					String codigo=landing1.getLandingId();
-
-					nombrecodigo.put(nombre, codigo);
-	
-				}
-			}
-			catch(PosException | NullException e)
-			{
-				e.printStackTrace();
-			}
-			
-			
-
-		}
-		
-		try
-		{
-			ILista valores = landingidtabla.valueSet();
-			
-			for(int i=1; i<=valores.size(); i++)
-			{
-				for(int j=1; j<=((ILista) valores.getElement(i)).size(); j++)
-				{
-					Vertex vertice1;
-					if((ILista) valores.getElement(i) != null)
-					{
-						vertice1= (Vertex) ((ILista) valores.getElement(i)).getElement(j);
-						for(int k=2; k<= ((ILista) valores.getElement(i)).size(); k++)
-						{
-							Vertex vertice2= (Vertex) ((ILista) valores.getElement(i)).getElement(k);
-							grafo.addEdge(vertice1.getId(), vertice2.getId(), 100);
-						}
-					}
-				}
-			}
-		}
-		catch(PosException | VacioException  e)
-		{
-			e.printStackTrace();
-		}
-		
-	
-		
-	
-}
-	
 	private static float distancia(double lon1, double lat1, double lon2, double lat2) 
 	{
 
