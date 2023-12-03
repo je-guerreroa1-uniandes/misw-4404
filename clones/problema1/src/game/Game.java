@@ -6,6 +6,12 @@ import java.util.Random;
 
 public class Game {
 
+	private void setWhiteSquares(String[][] board, int rowIndex) {
+		for(int i = 0; i < board[rowIndex].length; i++) {
+			board[rowIndex][i] = "⬜";
+		}
+	}
+
 	public void play() {
 		int player = 0;
 		String[][] board = {{"⬜", "⬜", "⬜", "⬜", "⬜", "⬜", "⬜", "⬜"},
@@ -28,14 +34,19 @@ public class Game {
 			Thread.currentThread().interrupt();
 		}
 
-		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
+		// Refactored: setting rows to white blocks
+		for(int i = 0; i < board.length; i++) {
+			setWhiteSquares(board, i);
+		}
+
+//		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
 		board[1][3] = "⬛"; board[1][4] = "⬛"; board[1][5] = "⬛";
 		board[2][2] = "⬛"; board[2][5] = "⬛"; 
 		board[3][6] = "⬛"; 
@@ -55,14 +66,17 @@ public class Game {
 			Thread.currentThread().interrupt();
 		}
 
-		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
+		for(int i = 0; i < board.length; i++) {
+			setWhiteSquares(board, i);
+		}
 		board[1][4] = "⬛"; 
 		board[2][3] = "⬛"; board[2][3] = "⬛"; 
 		board[3][4] = "⬛"; 
@@ -82,14 +96,17 @@ public class Game {
 			Thread.currentThread().interrupt();
 		}
 
-		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
-		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[0].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[1].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[2].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[3].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[4].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[5].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[6].length; i++) board[0][i] = "⬜";
+//		for(int i=0; i<board[7].length; i++) board[0][i] = "⬜";
+		for(int i = 0; i < board.length; i++) {
+			setWhiteSquares(board, i);
+		}
 
 		boolean playing = true;
 		while(playing) {
